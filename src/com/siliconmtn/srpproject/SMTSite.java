@@ -1,9 +1,6 @@
 package com.siliconmtn.srpproject;
 
-import java.util.List;
-
-import com.siliconmtn.srpproject.connection.SocketConnection;
-import com.siliconmtn.srpproject.parse.Parser;
+import com.siliconmtn.srpproject.connection.ServerConnection;
 
 /****************************************************************************
  * <b>Title</b>: SMTSite.javaIncomingDataWebService.java
@@ -25,12 +22,11 @@ import com.siliconmtn.srpproject.parse.Parser;
 public class SMTSite {
 
 	// should have parser, connection, and file variables
-	private static final String HOST_NAME = "www.siliconmtn.com";
-	private static final int PORT = 80;
-	private SocketConnection sckConn = null;
-	private Parser parser = null;
+	private final String hostName = "www.siliconmtn.com";
+	private final int port = 80;
+	private ServerConnection svrConn = null;
 	private StringBuilder strbuild = null;
-	private List<String> parsedList = null;
+
 	/**
 	 * Main method
 	 * 
@@ -39,22 +35,30 @@ public class SMTSite {
 	public static void main(String[] args) {
 		SMTSite smt = new SMTSite();
 
-		smt.initialize();
+		smt.init();
+		//smt.initialize();
 	}
-
+	
+	public void init(){
+		svrConn = new ServerConnection();
+		
+		try {
+			svrConn.sendPost();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * will set up class so it can be used
 	 */
 	public void initialize() {
 		String path = "www.siliconmtn.com/login";
-		System.out.println("Connecting to " + HOST_NAME + " on port " + PORT);
-		sckConn = new SocketConnection();
-		strbuild = sckConn.connection(HOST_NAME, PORT, path);
+		System.out.println("Connecting to " + hostName + " on port " + port);
+		svrConn = new ServerConnection();
+		strbuild = svrConn.connection(hostName, port, path);
 		System.out.println(strbuild);
-		parser = new Parser(strbuild);
-		parsedList = parser.getTableData();
-		for (String pl : parsedList) {
-			System.out.println("1" + pl);
-		}
+
 	}
+	
 }
