@@ -3,6 +3,7 @@ package com.siliconmtn.srpproject.parse;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /****************************************************************************
  * <b>Title</b>: Parser.javaIncomingDataWebService.java <p/>
  * <b>Project</b>: SMTSpiderRAMDataFeed <p/>
@@ -16,32 +17,84 @@ import java.util.List;
  ****************************************************************************/
 
 public class Parser {
-	
-	private StringBuilder resource = null;
+
 	
 	/**
-	 * Pass in collection of data to be parsed by class
-	 * @param data
+	 * Parses resource for just form tags
+	 * @return
 	 */
-	public Parser(StringBuilder data) {
-		this.resource = data;
+	public String getForm(String resource){
+		String form = null;
+		List<Integer> startForm = new ArrayList<Integer>();
+		List<Integer> endForm = new ArrayList<Integer>();
+		
+		startForm = this.getLocation(resource,"<form");
+		endForm = this.getLocation(resource, "</form>");
+		
+		System.out.println(startForm);
+		System.out.println(endForm);
+		
+		for (int i = 0; i < startForm.size(); i++) {
+
+			// Create parameters for a start and end point
+			int start = startForm.get(i);
+			int end = endForm.get(i);
+		
+			form = resource.substring(start, end);
+		}
+		
+		return form;
+	}
+
+	
+	/**
+	 * Will loop through resource and return all locations of given data
+	 * @param parseInfo
+	 * @return
+	 */
+	public List<Integer> getLocation(String resource, String parseInfo) {
+		List<Integer> values = new ArrayList<Integer>();
+
+		int bit = 0;
+		while (bit > -1) {
+			bit = resource.indexOf(parseInfo, bit);
+
+			// If it finds a match will put location into list
+			if (bit > -1) {
+				values.add(bit);
+				bit++;
+			}
+		}
+		return values;
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Will parse a form and insert a given value
+	 * @param resource
+	 * @param value
 	 */
-	public List<String> getTableData(){
-		List<String> td = new ArrayList<String>();
+	public void insertValue(String form, String value, String startLoc, String endLoc){
 		
-		//parse resource to get all tds
-		String[] rows = resource.toString().split("<td");
+		List<Integer> start = new ArrayList<Integer>();
+		List<Integer> end = new ArrayList<Integer>();
 		
-		for(String r : rows){
-			td.add(r);
+		//parse form to get email and password fields
+		start = this.getLocation(form, startLoc);
+		end = this.getLocation(form, endLoc);
+		
+		for (int i = 0; i < start.size(); i++) {
+
+			// Create parameters for a start and end point
+			int begin = start.get(i);
+			int finish = form.indexOf(end.get(i), begin);
+		
+			//insert into form based off of start and end
+			 String formStart = form.substring(0, begin);
+			 String formEnd = form.substring(finish);
+			 String newForm = formStart + value + formEnd;
+			 
+			 System.out.println(newForm);
 		}
-		//put each td into a list
-		return td;
 	}
 	
 }

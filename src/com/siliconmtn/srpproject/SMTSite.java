@@ -1,6 +1,7 @@
 package com.siliconmtn.srpproject;
 
 import com.siliconmtn.srpproject.connection.ServerConnection;
+import com.siliconmtn.srpproject.parse.Parser;
 
 /****************************************************************************
  * <b>Title</b>: SMTSite.javaIncomingDataWebService.java
@@ -26,8 +27,9 @@ public class SMTSite {
 	private final int port = 80;
 	private ServerConnection svrConn = null;
 	private StringBuilder strbuild = null;
-
-	/**
+	private Parser parser = null;
+	
+	/**	
 	 * Main method
 	 * 
 	 * @param args
@@ -35,29 +37,43 @@ public class SMTSite {
 	public static void main(String[] args) {
 		SMTSite smt = new SMTSite();
 
-		smt.init();
-		//smt.initialize();
+		smt.initialize();
+		smt.run();
 	}
-	
-	public void init(){
-		svrConn = new ServerConnection();
-		
-		try {
-			svrConn.sendPost();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	/**
 	 * will set up class so it can be used
 	 */
 	public void initialize() {
+		
 		String path = "www.siliconmtn.com/login";
 		System.out.println("Connecting to " + hostName + " on port " + port);
+		
 		svrConn = new ServerConnection();
 		strbuild = svrConn.connection(hostName, port, path);
-		System.out.println(strbuild);
+
+	}
+	
+	/**
+	 * will handle business logic required to spider site
+	 */
+	public void run(){
+		
+		parser = new Parser();
+		
+		String form = parser.getForm(strbuild.toString());
+		System.out.println(form);
+		
+		this.getFormParams(form);
+		//insert values into it
+		
+	}
+	
+	/**
+	 * will get all form parameters from page form
+	 */
+	public void getFormParams(String form){
+		
 
 	}
 	
